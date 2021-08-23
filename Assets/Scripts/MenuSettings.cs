@@ -5,9 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class MenuSettings : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public void ExitSettings()
+    private GameObject settings;
+
+    private void Start()
     {
-        SceneManager.LoadScene("Menu");
+        settings = GameObject.Find("Canvas").transform
+            .Find("Settings").gameObject;
+    }
+
+    public void Exit()
+    {
+        settings.SetActive(false);
     }
 }
