@@ -27,8 +27,8 @@ public class CharacterController : NetworkBehaviour
     const float rehealRate = 0.7f;
     const float rehealPeriod = 0.7f;
 
-    const float manaRestoreRate = 1.1f;
-    const float manaRestorePeriod = 1.1f;
+    const float manaRestoreRate = 0.7f;
+    const float manaRestorePeriod = 0.7f;
 
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private GameObject arrowPrefab;
@@ -171,7 +171,7 @@ public class CharacterController : NetworkBehaviour
     private void CmdMageAttack()
     {
         Debug.Log("Cmd attack - serverside");
-        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Mage)
+        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Mage && mana > 2f)
         {
             Vector3 spawnPosition = transform.position + transform.rotation * Vector3.forward * 2f;
             GameObject fireball = Instantiate(fireballPrefab, spawnPosition, transform.rotation);
@@ -186,7 +186,7 @@ public class CharacterController : NetworkBehaviour
     [Command]
     private void CmdArcheryAttack(Vector3 raycastedTarget)
     {
-        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Archer)
+        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Archer && mana > 2f)
         {
             Vector3 spawnPosition = transform.position + transform.rotation * Vector3.forward * 1f;
             GameObject arrow = Instantiate(arrowPrefab, spawnPosition, transform.rotation);
