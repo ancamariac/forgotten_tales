@@ -5,6 +5,14 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    private GameObject settings;
+
+    private void Start()
+    {
+        settings = GameObject.Find("Canvas").transform
+            .Find("Settings").gameObject;
+    }
+
     public void PlayGame()
     {
         SceneManager.LoadScene("CharacterSelection");
@@ -12,8 +20,9 @@ public class MainMenu : MonoBehaviour
 
     public void Settings()
     {
-        SceneManager.LoadScene("MenuSettings");
+        settings.SetActive(true);
     }
+
     public void Credits()
     {
         SceneManager.LoadScene("Credits");
