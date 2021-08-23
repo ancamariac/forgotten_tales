@@ -26,6 +26,8 @@ public class CharacterController : NetworkBehaviour
 
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private Slider healthSlider;
+    private GameObject badlyDamaged;
 
     private PlayerHealthBar hpbar;
 
@@ -70,6 +72,9 @@ public class CharacterController : NetworkBehaviour
         healthSlider = GameObject.Find("Canvas").transform
             .Find("Health Bar").gameObject.GetComponent<Slider>();
 
+        badlyDamaged = GameObject.Find("Canvas").transform
+            .Find("BadlyDamaged").gameObject;
+
         if (isServer)
         {
             InvokeRepeating(nameof(HealingTick), rehealPeriod, rehealPeriod);
@@ -78,6 +83,14 @@ public class CharacterController : NetworkBehaviour
 
     private void Update()
     {
+        if (health < 20f)
+        {
+            badlyDamaged.SetActive(true);
+        } else
+        {
+            badlyDamaged.SetActive(false);
+        }
+
         if (Time.time > nextAttack)
         {
             if (cif.AttemptsAttack())
@@ -101,8 +114,6 @@ public class CharacterController : NetworkBehaviour
                             CmdArcheryAttack(target);
                         }
                     }
-
-
                 }
 
                 nextAttack = Time.time + cooldownTime;
@@ -196,20 +207,6 @@ public class CharacterController : NetworkBehaviour
         return false;
     }
 
-    /*
-    private void OnDrawGizmos()
-    {
-        Vector3 point;
-        if ( BowRaycast(out point) )
-        {
-            Gizmos.DrawSphere(point, 1);
-        }
-        
-    }
-    */
-
-    [SerializeField] private Slider healthSlider;
-
     [SyncVar(hook = nameof(SetHealth))]
     private float health = 50f;
 
@@ -241,6 +238,7 @@ public class CharacterController : NetworkBehaviour
     public void DealDamage(float damage)
     {
         health -= damage;
+
         if (health < 0f)
         {
             health = 0f;
