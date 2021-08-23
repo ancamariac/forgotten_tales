@@ -24,9 +24,17 @@ public class CharacterController : NetworkBehaviour
     private float cooldownTime = 0.6f;
     private float nextAttack = 0;
 
+    const float rehealRate = 0.7f;
+    const float rehealPeriod = 0.7f;
+
+    const float manaRestoreRate = 1.1f;
+    const float manaRestorePeriod = 1.1f;
+
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private Slider healthSlider;
+    [SerializeField] private Slider manaSlider;
+
     private GameObject badlyDamaged;
 
     private PlayerHealthBar hpbar;
@@ -75,18 +83,23 @@ public class CharacterController : NetworkBehaviour
         badlyDamaged = GameObject.Find("Canvas").transform
             .Find("BadlyDamaged").gameObject;
 
+        manaSlider = GameObject.Find("Canvas").transform
+            .Find("Mana Bar").gameObject.GetComponent<Slider>();
+
         if (isServer)
         {
-            InvokeRepeating(nameof(HealingTick), rehealPeriod, rehealPeriod);
+            InvokeRepeating(nameof(HealingTick), rehealPeriod, rehealRate);
+            InvokeRepeating(nameof(ManaRestoreTick), manaRestorePeriod, manaRestoreRate);
         }
     }
 
     private void Update()
     {
-        if (health < 20f)
+        if (health < 10f)
         {
             badlyDamaged.SetActive(true);
-        } else
+        }
+        else
         {
             badlyDamaged.SetActive(false);
         }
@@ -132,7 +145,7 @@ public class CharacterController : NetworkBehaviour
         {
             if (!cif.IsWalking() && !cif.IsWalkingBackwards())
             {
-                if ( animationController.Finished())
+                if (animationController.Finished())
                     animationController.SwitchTo(idleAnim);
             }
         }
@@ -144,11 +157,11 @@ public class CharacterController : NetworkBehaviour
                 animationController.SwitchTo(walkAnim);
             }
         }
-        
+
 
         animationController.Step(Time.deltaTime);
 
-        if ( isLocalPlayer)
+        if (isLocalPlayer)
         {
             movementController.Step(Time.deltaTime);
         }
@@ -164,7 +177,8 @@ public class CharacterController : NetworkBehaviour
             GameObject fireball = Instantiate(fireballPrefab, spawnPosition, transform.rotation);
             NetworkServer.Spawn(fireball);
 
-            fireball.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 5, 10), ForceMode.Impulse);  
+            fireball.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 5, 10), ForceMode.Impulse);
+            ManaUsage(4f);
         }
 
     }
@@ -179,6 +193,7 @@ public class CharacterController : NetworkBehaviour
             NetworkServer.Spawn(arrow);
 
             arrow.GetComponent<ArrowController>().target = raycastedTarget;
+            ManaUsage(4f);
         }
     }
 
@@ -186,9 +201,7 @@ public class CharacterController : NetworkBehaviour
     private bool BowRaycast(out Vector3 point)
     {
         Ray rayOrigin = Camera.main.ScreenPointToRay(
-            new Vector3(Camera.main.scaledPixelWidth/2, Camera.main.scaledPixelHeight/2, 0));
-
-        RaycastHit rayinfo;
+            new Vector3(Camera.main.scaledPixelWidth / 2, Camera.main.scaledPixelHeight / 2, 0));
 
         var results = Physics.RaycastAll(rayOrigin, 100f);
 
@@ -210,29 +223,28 @@ public class CharacterController : NetworkBehaviour
     [SyncVar(hook = nameof(SetHealth))]
     private float health = 50f;
 
+    [SyncVar(hook = nameof(SetMana))]
+    private float mana = 40f;
+
     void SetHealth(float oldHealth, float newHealth)
     {
         if (isLocalPlayer)
         {
             healthSlider.value = newHealth;
-        } else
+        }
+        else
         {
             hpbar.FillAmount = health / healthSlider.maxValue;
         }
     }
 
-    /*
-    [ServerCallback]
-    private void OnCollisionEnter(Collision collision)
+    void SetMana(float oldMana, float newMana)
     {
-        // if it's a fireball,
-        var contact = collision.rigidbody.gameObject.GetComponent<Projectile>();
-        if (contact != null)
+        if (isLocalPlayer)
         {
-            DealDamage(10f);
+            manaSlider.value = newMana;
         }
     }
-    */
 
     [Server]
     public void DealDamage(float damage)
@@ -245,8 +257,16 @@ public class CharacterController : NetworkBehaviour
         }
     }
 
-    const float rehealRate = 1f;
-    const float rehealPeriod = 1f;
+    [Server]
+    public void ManaUsage(float power)
+    {
+        mana -= power;
+
+        if (mana < 0f)
+        {
+            mana = 0f;
+        }
+    }
 
     [Server]
     private void HealingTick()
@@ -255,6 +275,16 @@ public class CharacterController : NetworkBehaviour
         if (health > healthSlider.maxValue)
         {
             health = healthSlider.maxValue;
+        }
+    }
+
+    [Server]
+    private void ManaRestoreTick()
+    {
+        mana += manaRestoreRate;
+        if (mana > manaSlider.maxValue)
+        {
+            mana = manaSlider.maxValue;
         }
     }
 }

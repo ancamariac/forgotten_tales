@@ -37,7 +37,7 @@ public class Projectile : NetworkBehaviour
         if (co.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             CharacterController player = co.gameObject.GetComponent<CharacterController>();
-            player.DealDamage(10f);
+            player.DealDamage(8f);
 
             NetworkServer.Destroy(gameObject);
         }
