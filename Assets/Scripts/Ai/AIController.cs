@@ -127,11 +127,6 @@ public class AIController : NetworkBehaviour
         }
     }
 
-    public float GetHealth()
-    {
-        return _health.CurrentHealth;
-    }
-
     private void ChasePlayer()
     {
         if (Vector3.Distance(transform.position, target.position) > playerOutSightRange)
@@ -174,18 +169,6 @@ public class AIController : NetworkBehaviour
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
     }
-
-/*    void ShootFireball()
-    {
-        Debug.Log("Shoot fireball");
-        GameObject fireball = Instantiate(projectile,
-                new Vector3(witchHandTransform.position.x, witchHandTransform.position.y, witchHandTransform.position.z),
-                witchHandTransform.rotation) as GameObject;
-        fireball.transform.parent = null;
-        Physics.IgnoreCollision(target.GetComponent<SphereCollider>(), fireball.GetComponent<SphereCollider>());
-        NetworkServer.Spawn(fireball);
-    }*/
-
     
     void LookAtPlayer()
     {
@@ -207,8 +190,8 @@ public class AIController : NetworkBehaviour
         }    
     }
 
-    [ClientRpc]
-    public void RpcTakeDamage(float amount)
+    [Server]
+    public float TakeDamage(float amount)
     {
         _health.CurrentHealth -= amount;
 
@@ -217,6 +200,8 @@ public class AIController : NetworkBehaviour
         {
             NetworkServer.Destroy(gameObject);
         }
+
+        return _health.CurrentHealth;
     }
 
     private void OnDrawGizmosSelected()

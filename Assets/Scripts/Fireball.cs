@@ -32,11 +32,10 @@ public class Fireball : NetworkBehaviour
             return;
         }
         
-        mobAI.RpcTakeDamage(10f);
-        Debug.Log("-----------------HAM-------------------");
-        if (mobAI.GetHealth() <= 10f)
+        float hpLeft = mobAI.TakeDamage(10f);
+
+        if (hpLeft <= 0f)
         {
-            Debug.Log("-----------------MIAU-------------------");
             shooter.IncreaseExp(10f);
         }
     }

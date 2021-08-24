@@ -57,9 +57,9 @@ public class ArrowController : NetworkBehaviour
             CancelInvoke(nameof(AutoDestroy));
         }
 
-        mobAI.RpcTakeDamage(10f);
+        float hpLeft = mobAI.TakeDamage(10f);
 
-        if (mobAI.GetHealth() <= 0)
+        if (hpLeft <= 0f)
         {
             shooter.IncreaseExp(10f);
         }

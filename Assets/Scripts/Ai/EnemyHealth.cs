@@ -10,9 +10,9 @@ public class EnemyHealth : NetworkBehaviour
     [SerializeField]
     public float maxHealth = 100;
 
-    [SyncVar]
+    [SyncVar(hook = nameof(SetCurrentHealth))]
     [SerializeField]
-    public float currentHealth;
+    private float currentHealth;
 
     [SerializeField]
     public HealthBar healthBar;
@@ -25,21 +25,16 @@ public class EnemyHealth : NetworkBehaviour
         healthBar.FillAmount = maxHealth;
     }
 
-    void Update()
+    void SetCurrentHealth(float oldHealth, float newHealth)
     {
-        if (isServer == false)
+        if (isClient)
         {
-            return;
+            DamageBarUpdate();
         }
-        RpcDamageTest();
-/*        float currentHealthPercent = (float)currentHealth / (float)maxHealth;
-        healthBar.FillAmount = currentHealthPercent;*/
     }
 
-    [ClientRpc]
-    public void RpcDamageTest()
+    public void DamageBarUpdate()
     {
-        //CurrentHealth -= 10;
         float currentHealthPercent = (float)currentHealth / (float)maxHealth;
         healthBar.FillAmount = currentHealthPercent;
     }
