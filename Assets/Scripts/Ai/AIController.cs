@@ -15,6 +15,7 @@ public class AIController : NetworkBehaviour
 
     private SphereCollider sightCollider;
 
+    private bool isDead = false;
 
     //Patroling
     [Header("Patroling")] 
@@ -47,23 +48,25 @@ public class AIController : NetworkBehaviour
     [SerializeField] GameObject hitPrefab;
     [SerializeField] EnemyHealth _health;
 
-
-
-
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+
         sightCollider = GetComponent<SphereCollider>();
         sightCollider.isTrigger = true;
         sightCollider.radius = sightRange;
+
         witchHandTransform = transform.Find("Hand");
+
         _health = GetComponent<EnemyHealth>();
+
         playerLayerMask = LayerMask.GetMask("Player");
+
     }
 
     private void Update()
     {
-        if(isServer == false)
+        if (isServer == false)
         {
             return;
         }
@@ -124,7 +127,6 @@ public class AIController : NetworkBehaviour
         }
     }
 
-    
     private void ChasePlayer()
     {
         if (Vector3.Distance(transform.position, target.position) > playerOutSightRange)
@@ -167,18 +169,6 @@ public class AIController : NetworkBehaviour
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
     }
-
-/*    void ShootFireball()
-    {
-        Debug.Log("Shoot fireball");
-        GameObject fireball = Instantiate(projectile,
-                new Vector3(witchHandTransform.position.x, witchHandTransform.position.y, witchHandTransform.position.z),
-                witchHandTransform.rotation) as GameObject;
-        fireball.transform.parent = null;
-        Physics.IgnoreCollision(target.GetComponent<SphereCollider>(), fireball.GetComponent<SphereCollider>());
-        NetworkServer.Spawn(fireball);
-    }*/
-
     
     void LookAtPlayer()
     {
@@ -200,15 +190,18 @@ public class AIController : NetworkBehaviour
         }    
     }
 
-    [ClientRpc]
-    public void RpcTakeDamage(float amount)
+    [Server]
+    public float TakeDamage(float amount)
     {
         _health.CurrentHealth -= amount;
 
+        // Death of the mob
         if (_health.CurrentHealth <= 0)
         {
             NetworkServer.Destroy(gameObject);
         }
+
+        return _health.CurrentHealth;
     }
 
     private void OnDrawGizmosSelected()

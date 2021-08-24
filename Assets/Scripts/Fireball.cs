@@ -7,6 +7,8 @@ public class Fireball : NetworkBehaviour
 {
     private const float lifetime = 1f;
 
+    public CharacterController shooter;
+
     void Start()
     {
         if( isServer)
@@ -30,6 +32,11 @@ public class Fireball : NetworkBehaviour
             return;
         }
         
-        mobAI.RpcTakeDamage(10f);
+        float hpLeft = mobAI.TakeDamage(10f);
+
+        if (hpLeft <= 0f)
+        {
+            shooter.IncreaseExp(10f);
+        }
     }
 }
