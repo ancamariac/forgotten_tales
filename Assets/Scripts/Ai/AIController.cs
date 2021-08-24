@@ -52,7 +52,6 @@ public class AIController : NetworkBehaviour
 
     private void Start()
     {
-        //target = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
         sightCollider = GetComponent<SphereCollider>();
         sightCollider.isTrigger = true;
@@ -86,7 +85,6 @@ public class AIController : NetworkBehaviour
         { 
             Patroling(); 
         }
-        //if (Input.GetKeyDown(KeyCode.F)) { RpcTakeDamage(10f); }
     }
 
     private void Patroling()
@@ -132,7 +130,6 @@ public class AIController : NetworkBehaviour
         if (Vector3.Distance(transform.position, target.position) > playerOutSightRange)
         {
             target = null;
-            //Debug.Log("Target Lost!");
             return;
         }
         agent.SetDestination(target.position);
@@ -200,7 +197,6 @@ public class AIController : NetworkBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Player") && target == null)
         {
             target = other.gameObject.transform;
-            //Debug.Log("Player encountered");
         }    
     }
 
@@ -208,11 +204,10 @@ public class AIController : NetworkBehaviour
     public void RpcTakeDamage(float amount)
     {
         _health.CurrentHealth -= amount;
-        //Instantiate(hitPrefab, impactPoint, transform.rotation);
 
         if (_health.CurrentHealth <= 0)
         {
-            gameObject.SetActive(false);
+            NetworkServer.Destroy(gameObject);
         }
     }
 
@@ -221,8 +216,5 @@ public class AIController : NetworkBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, sightRange);
-        //Gizmos.color = Color.green;
-        //Gizmos.DrawWireSphere(transform.position, attackSphere);
     }
 }
