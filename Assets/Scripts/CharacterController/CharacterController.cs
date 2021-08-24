@@ -32,8 +32,10 @@ public class CharacterController : NetworkBehaviour
 
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private GameObject arrowPrefab;
+
     [SerializeField] private Slider healthSlider;
     [SerializeField] private Slider manaSlider;
+    [SerializeField] private Slider expSlider;
 
     private GameObject badlyDamaged;
 
@@ -86,6 +88,9 @@ public class CharacterController : NetworkBehaviour
         manaSlider = GameObject.Find("Canvas").transform
             .Find("Mana Bar").gameObject.GetComponent<Slider>();
 
+        expSlider = GameObject.Find("Canvas").transform
+            .Find("Exp Bar").gameObject.GetComponent<Slider>();
+
         if (isServer)
         {
             InvokeRepeating(nameof(HealingTick), rehealPeriod, rehealRate);
@@ -95,6 +100,8 @@ public class CharacterController : NetworkBehaviour
 
     private void Update()
     {
+
+
         if (health < 10f)
         {
             badlyDamaged.SetActive(true);
@@ -171,13 +178,15 @@ public class CharacterController : NetworkBehaviour
     private void CmdMageAttack()
     {
         Debug.Log("Cmd attack - serverside");
-        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Mage && mana > 2f)
+        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Mage && mana > 4f)
         {
             Vector3 spawnPosition = transform.position + transform.rotation * Vector3.forward * 2f;
             GameObject fireball = Instantiate(fireballPrefab, spawnPosition, transform.rotation);
             NetworkServer.Spawn(fireball);
 
             fireball.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 5, 10), ForceMode.Impulse);
+            fireball.GetComponent<Fireball>().shooter = this;
+
             ManaUsage(4f);
         }
 
@@ -186,13 +195,15 @@ public class CharacterController : NetworkBehaviour
     [Command]
     private void CmdArcheryAttack(Vector3 raycastedTarget)
     {
-        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Archer && mana > 2f)
+        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Archer && mana > 4f)
         {
             Vector3 spawnPosition = transform.position + transform.rotation * Vector3.forward * 1f;
             GameObject arrow = Instantiate(arrowPrefab, spawnPosition, transform.rotation);
             NetworkServer.Spawn(arrow);
 
             arrow.GetComponent<ArrowController>().target = raycastedTarget;
+            arrow.GetComponent<ArrowController>().shooter = this;
+
             ManaUsage(4f);
         }
     }
@@ -226,6 +237,9 @@ public class CharacterController : NetworkBehaviour
     [SyncVar(hook = nameof(SetMana))]
     private float mana = 40f;
 
+    [SyncVar(hook = nameof(SetExp))]
+    public float experience = 0f;
+
     void SetHealth(float oldHealth, float newHealth)
     {
         if (isLocalPlayer)
@@ -243,6 +257,14 @@ public class CharacterController : NetworkBehaviour
         if (isLocalPlayer)
         {
             manaSlider.value = newMana;
+        }
+    }
+
+    void SetExp(float oldExp, float newExp)
+    {
+        if (isLocalPlayer)
+        {
+            expSlider.value = newExp;
         }
     }
 
@@ -266,6 +288,12 @@ public class CharacterController : NetworkBehaviour
         {
             mana = 0f;
         }
+    }
+
+    [Server]
+    public void IncreaseExp(float xp)
+    {
+        experience += xp;
     }
 
     [Server]

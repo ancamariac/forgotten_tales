@@ -10,6 +10,8 @@ public class ArrowController : NetworkBehaviour
     const float speed = 2f;
     const float aliveTime = 5f;
 
+    public CharacterController shooter;
+
     private void Start()
     {
         // Set random up direction so the back fins are randomized ( not in the same orientation )
@@ -56,6 +58,11 @@ public class ArrowController : NetworkBehaviour
         }
 
         mobAI.RpcTakeDamage(10f);
+
+        if (mobAI.GetHealth() <= 0)
+        {
+            shooter.IncreaseExp(10f);
+        }
 
         AutoDestroy();
     }
