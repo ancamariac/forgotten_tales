@@ -171,7 +171,11 @@ MonoBehaviour:
     rightShoulder: {fileID: 1337587338611568220}
   fireballPrefab: {fileID: 2162792461418347102, guid: f2a7a23f1607069409fdabb6369de9be, type: 3}
   arrowPrefab: {fileID: 8559951426427756600, guid: 125203bf5e9759248b4096918d9de2af, type: 3}
+  swordTrailPrefab: {fileID: 4908241301240423612, guid: c4c2f9cab2979344d89dd6f7f3ea8e1a, type: 3}
   healthSlider: {fileID: 0}
+  manaSlider: {fileID: 0}
+  expSlider: {fileID: 0}
+  experience: 0
 --- !u!114 &8681396540556774358
 MonoBehaviour:
   m_ObjectHideFlags: 0
