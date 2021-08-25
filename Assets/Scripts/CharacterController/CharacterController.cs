@@ -32,6 +32,7 @@ public class CharacterController : NetworkBehaviour
 
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private GameObject swordTrailPrefab;
 
     [SerializeField] private Slider healthSlider;
     [SerializeField] private Slider manaSlider;
@@ -121,6 +122,11 @@ public class CharacterController : NetworkBehaviour
                 {
                     Debug.Log("Cmd attack - clientside");
 
+                    if (characterOutfit.GetClassIndex() == (int)CharacterClass.Knight)
+                    {
+                        CmdKnightAttack();
+                    }
+
                     if (characterOutfit.GetClassIndex() == (int)CharacterClass.Mage)
                     {
                         CmdMageAttack();
@@ -175,6 +181,21 @@ public class CharacterController : NetworkBehaviour
     }
 
     [Command]
+    private void CmdKnightAttack()
+    {
+        Debug.Log("Cmd attack - serverside");
+        if (characterOutfit.GetClassIndex() == (int)CharacterClass.Knight)
+        {
+            Vector3 spawnPosition = transform.position + transform.rotation * Vector3.forward * 1f;
+            GameObject swordTrail = Instantiate(swordTrailPrefab, spawnPosition, transform.rotation);
+            NetworkServer.Spawn(swordTrail);
+
+            swordTrail.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 0, 1), ForceMode.Impulse);
+            swordTrail.GetComponent<SwordTrail>().shooter = this;
+        }
+    }
+
+    [Command]
     private void CmdMageAttack()
     {
         Debug.Log("Cmd attack - serverside");
@@ -189,7 +210,6 @@ public class CharacterController : NetworkBehaviour
 
             ManaUsage(4f);
         }
-
     }
 
     [Command]
