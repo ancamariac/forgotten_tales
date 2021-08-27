@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class NameBar : NetworkBehaviour
+public class NameBar : MonoBehaviour
 {
     private Camera myCamera;
 

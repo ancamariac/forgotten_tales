@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Mirror;
 
-public class HealthBar : NetworkBehaviour
+public class HealthBar : MonoBehaviour
 {
     [SerializeField]
     private Image foregroundImage;
