@@ -8,9 +8,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: 1857f35ba954a09458a0efcf1b1a3d19
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/CharacterSelection.unity
     guid: fb5e86fc5a4787748ba65cf20f14beed
@@ -21,9 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Level_01.unity
     guid: 70d1e32a15aba324dba1d1a10839d592
   - enabled: 1
-    path: Assets/Scenes/MenuSettings.unity
-    guid: 70dd5fc11419c9a4ba35cb1e2cef4e33
-  - enabled: 1
     path: Assets/Scenes/Credits.unity
     guid: 0f370c6ac51364e41bcbafe72b3e54ea
+  - enabled: 1
+    path: Assets/Scenes/EndOfLife.unity
+    guid: 49e1bce519e277e47beb6d036fe65257
   m_configObjects: {}
