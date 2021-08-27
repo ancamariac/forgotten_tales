@@ -362,7 +362,7 @@ MonoBehaviour:
   playerOutSightRange: 16
   playerInSightRange: 0
   playerInAttackRange: 0
-  projectile: {fileID: 2356534564040340422, guid: faf1377954889b6478701d085a1edae5, type: 3}
+  projectile: {fileID: 2356534564040340422, guid: e6641e365eeed6b418dff46b66859582, type: 3}
   witchHandTransform: {fileID: 0}
   hitPrefab: {fileID: 0}
   _health: {fileID: 0}
