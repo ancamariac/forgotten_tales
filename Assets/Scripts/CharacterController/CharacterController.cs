@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CharacterController : NetworkBehaviour
@@ -101,7 +102,12 @@ public class CharacterController : NetworkBehaviour
 
     private void Update()
     {
-
+        if (health == 0)
+        {
+            Destroy(NetworkManager.singleton.gameObject);
+            SceneManager.LoadScene("EndOfLife");
+            Cursor.lockState = CursorLockMode.None;
+        }
 
         if (health < 10f)
         {
